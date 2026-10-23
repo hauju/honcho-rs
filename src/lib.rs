@@ -80,7 +80,7 @@ pub use conclusions::{ConclusionsView, WorkspaceConclusions};
 pub use error::{ApiError, Error, Result};
 pub use options::{
     ChatOptions, ConclusionQueryOptions, ContextOptions, FileUpload, ListOptions,
-    PeerContextOptions, QueueStatusOptions, RepresentationOptions, SearchOptions,
+    PeerContextOptions, QueueStatusOptions, RepresentationOptions, ScopeSelector, SearchOptions,
 };
 pub use pagination::Page;
 pub use peer::Peer;

@@ -51,13 +51,25 @@ impl std::fmt::Debug for Honcho {
 /// Builder for [`Honcho`]. Unset values fall back to `HONCHO_API_KEY`,
 /// `HONCHO_URL` and `HONCHO_WORKSPACE_ID`, then to the defaults
 /// (`https://api.honcho.dev`, workspace `"default"`, 60s timeout).
-#[derive(Debug, Default)]
+#[derive(Default)]
 pub struct HonchoBuilder {
     api_key: Option<String>,
     base_url: Option<String>,
     workspace_id: Option<String>,
     timeout: Option<Duration>,
     headers: HeaderMap,
+}
+
+impl std::fmt::Debug for HonchoBuilder {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("HonchoBuilder")
+            .field("api_key", &self.api_key.as_ref().map(|_| "[redacted]"))
+            .field("base_url", &self.base_url)
+            .field("workspace_id", &self.workspace_id)
+            .field("timeout", &self.timeout)
+            .field("headers", &self.headers)
+            .finish()
+    }
 }
 
 impl HonchoBuilder {

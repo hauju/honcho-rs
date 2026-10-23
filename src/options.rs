@@ -22,14 +22,44 @@ pub struct ListOptions {
     pub reverse: bool,
 }
 
+/// Scope selection for chat and representation calls. The two shapes mean
+/// different things to the server: a single scope answers from that scope's
+/// own representation of the target (including conclusions reasoned within
+/// it), while a list keeps the peer's own view and only restricts recall to
+/// the scopes' member sessions.
+#[derive(Debug, Clone, Serialize)]
+#[serde(untagged)]
+pub enum ScopeSelector {
+    One(String),
+    Many(Vec<String>),
+}
+
+impl From<&str> for ScopeSelector {
+    fn from(s: &str) -> Self {
+        Self::One(s.to_owned())
+    }
+}
+
+impl From<String> for ScopeSelector {
+    fn from(s: String) -> Self {
+        Self::One(s)
+    }
+}
+
+impl From<Vec<String>> for ScopeSelector {
+    fn from(v: Vec<String>) -> Self {
+        Self::Many(v)
+    }
+}
+
 /// Options for dialectic chat.
 #[derive(Debug, Clone, Default)]
 pub struct ChatOptions {
     /// Ask what this peer knows about `target` instead of about itself (peer chat only).
     pub target: Option<String>,
     pub session: Option<String>,
-    /// Restrict recall to these scopes.
-    pub scope: Option<Vec<String>>,
+    /// Confine recall to a scope or scopes; see [`ScopeSelector`].
+    pub scope: Option<ScopeSelector>,
     /// Restrict recall to these sessions (peer chat only).
     pub sessions: Option<Vec<String>>,
     pub reasoning_level: Option<ReasoningLevel>,
@@ -73,7 +103,8 @@ pub struct RepresentationOptions {
     pub search_max_distance: Option<f64>,
     pub include_most_frequent: Option<bool>,
     pub max_conclusions: Option<u32>,
-    pub scope: Option<Vec<String>>,
+    /// Confine the representation to a scope or scopes; see [`ScopeSelector`].
+    pub scope: Option<ScopeSelector>,
     /// Restrict to these sessions (sent as a `session_id` filter).
     pub sessions: Option<Vec<String>>,
 }

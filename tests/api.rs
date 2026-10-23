@@ -320,6 +320,39 @@ async fn peer_chat_non_stream() {
 }
 
 #[tokio::test]
+async fn chat_scalar_scope_is_sent_as_string() {
+    let (server, honcho) = setup().await;
+    mount_peer(&server, "alice").await;
+    Mock::given(method("POST"))
+        .and(path(ws_path("peers/alice/chat")))
+        .and(body_json(
+            json!({ "query": "q", "stream": false, "scope": "team" }),
+        ))
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({ "content": "ok" })))
+        .mount(&server)
+        .await;
+    let alice = honcho.peer("alice").await.unwrap();
+    let resp = alice
+        .chat(
+            "q",
+            ChatOptions {
+                scope: Some("team".into()),
+                ..Default::default()
+            },
+        )
+        .await
+        .unwrap();
+    assert_eq!(resp.content.as_deref(), Some("ok"));
+}
+
+#[test]
+fn builder_debug_redacts_api_key() {
+    let dbg = format!("{:?}", Honcho::builder().api_key("sk-secret-123"));
+    assert!(dbg.contains("[redacted]"));
+    assert!(!dbg.contains("sk-secret-123"));
+}
+
+#[tokio::test]
 async fn workspace_chat_body_omits_peer_only_fields() {
     let (server, honcho) = setup().await;
     Mock::given(method("POST"))
@@ -335,7 +368,7 @@ async fn workspace_chat_body_omits_peer_only_fields() {
             "q",
             ChatOptions {
                 target: Some("ignored".into()),
-                scope: Some(vec!["team".into()]),
+                scope: Some(vec!["team".to_string()].into()),
                 ..Default::default()
             },
         )
