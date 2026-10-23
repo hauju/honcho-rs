@@ -1,0 +1,25 @@
+[package]
+name = "honcho"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.99"
+license = "MIT OR Apache-2.0"
+description = "Async Rust SDK for the Honcho memory API"
+repository = "https://github.com/plastic-labs/honcho"
+keywords = ["honcho", "memory", "llm", "agents", "sdk"]
+categories = ["api-bindings", "asynchronous"]
+
+[dependencies]
+bytes = "1"
+chrono = { version = "0.4", default-features = false, features = ["serde", "std", "clock"] }
+futures = { version = "0.3", default-features = false, features = ["std"] }
+reqwest = { version = "0.13", default-features = false, features = ["rustls", "json", "multipart", "stream", "query"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+tokio = { version = "1", features = ["sync", "time"] }
+
+[dev-dependencies]
+futures = "0.3"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+wiremock = "0.6"
